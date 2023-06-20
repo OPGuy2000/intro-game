@@ -9,9 +9,10 @@ public class MoveScript : MonoBehaviour
     public float moveSpeed;
 
     public float dashAmplifier = 20f;
+    public float dashCooldown = 2f;
     private float dashTime = 0.25f;
-    private float dashCooldown = 3f;
     private bool dashAvailaible = true;
+    private bool isDashing = false;
 
     private Vector3 direction;
 
@@ -21,27 +22,31 @@ public class MoveScript : MonoBehaviour
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
-        direction = new Vector3(horizontal, 0f, vertical).normalized;
+        if (!isDashing)
+            direction = new Vector3(horizontal, 0f, vertical).normalized;
+
         if (!controller.isGrounded)
             direction.y = -0.5f;
 
         if (direction.magnitude >= 0.1f) {
             controller.Move(direction * moveSpeed * Time.deltaTime);
         }
-
+        
         if (Input.GetKeyDown(KeyCode.LeftShift) && dashAvailaible) 
             StartCoroutine(Dash());
     }
 
     IEnumerator Dash() {
         float startTime = Time.time;
-
+        
+        isDashing = true;
         while (Time.time < startTime + dashTime) {
             dashAvailaible = false;
             trailrenderer.emitting = true;
             controller.Move(direction*dashAmplifier*Time.deltaTime);
             yield return null;
         }
+        isDashing = false;
         trailrenderer.emitting = false;
         
         yield return new WaitForSeconds(dashCooldown);
