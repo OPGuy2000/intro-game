@@ -4,23 +4,11 @@ using UnityEngine;
 using TMPro;
 public class DialogueManager : MonoBehaviour
 {
-    public Canvas canvas;
-    private TextMeshProUGUI dialogueText;
-    private TextMeshProUGUI nameText;
+    private TextMeshPro dialogueText;
 
     private string[] lines;
     private int index;
     private bool dialogueOngoing = false;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        nameText = canvas.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
-        dialogueText = canvas.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
-
-        dialogueText.text = string.Empty;
-        nameText.text = string.Empty;
-    }
 
     void Update() {
         if (dialogueOngoing && Input.GetMouseButtonDown(0)) {
@@ -33,21 +21,21 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    public void StartDialogue(string[] lineArr, string name) {
-        canvas.gameObject.SetActive(true);
+    public void StartDialogue(string[] lineArr, TextMeshPro text) {
+        dialogueText = text;
         dialogueOngoing = true;
 
         lines = lineArr;
         index = 0;
-        nameText.text = name;
         
         StartCoroutine(TypeLine());
+
     }
 
     public void EndDialogue() {
         dialogueOngoing = false;
+        dialogueText.text = string.Empty;
         StopAllCoroutines();
-        canvas.gameObject.SetActive(false);
     }
 
     void NextLine() {
